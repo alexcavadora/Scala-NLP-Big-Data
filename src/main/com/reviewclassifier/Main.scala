@@ -5,9 +5,9 @@ import scopt.OParser
 import com.reviewclassifier.models._
 import com.reviewclassifier.utils._
 
-case class Config(
+case class Config (
     model: String = "RandomForest",
-    task: String = "category", // category or sentiment
+    task: String = "category", // "category" or "sentiment"
     trainPath: String = "data/train.csv",
     testPath: String = "data/test.csv",
     resultsDir: String = "results",
@@ -16,7 +16,8 @@ case class Config(
     numTrees: Int = 100,
     learningRate: Double = 0.1,
     regParam: Double = 0.01,
-    elasticNetParam: Double = 0.0
+    elasticNetParam: Double = 0.0,
+    seed = 64
 )
 
 object Main {
@@ -61,7 +62,10 @@ object Main {
           .text("Regularization parameter"),
         opt[Double]("elastic")
           .action((x, c) => c.copy(elasticNetParam = x))
-          .text("ElasticNet parameter")
+          .text("ElasticNet parameter"),
+        opt[Int]("seed")
+          .action((x, c) => c.copy(seed = x))
+          .text("Starting seed for consistency"),
       )
     }
     OParser.parse(parser, args, Config()) match {

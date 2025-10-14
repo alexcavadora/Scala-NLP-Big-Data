@@ -6,7 +6,6 @@ import com.reviewclassifier.Config
 
 trait BaseModel {
   def train(data: DataFrame): Transformer
-  def getName: String
 }
 
 object ModelFactory {
