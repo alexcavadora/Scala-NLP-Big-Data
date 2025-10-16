@@ -8,8 +8,8 @@ import com.reviewclassifier.utils._
 case class Config (
     model: String = "RandomForest",
     task: String = "category", // "category" or "sentiment"
-    trainPath: String = "data/train.csv",
-    testPath: String = "data/test.csv",
+    trainPath: String = "data/train.parquet",
+    testPath: String = "data/test.parquet",
     resultsDir: String = "results",
     maxIter: Int = 100,
     maxDepth: Int = 10,
@@ -17,7 +17,7 @@ case class Config (
     learningRate: Double = 0.1,
     regParam: Double = 0.01,
     elasticNetParam: Double = 0.0,
-    seed = 64
+    seed : Int = 64
 )
 
 object Main {
@@ -38,10 +38,10 @@ object Main {
           .text("Task: category or sentiment"),
         opt[String]("train")
           .action((x, c) => c.copy(trainPath = x))
-          .text("Path to training CSV"),
+          .text("Path to training data (Parquet format)"),
         opt[String]("test")
           .action((x, c) => c.copy(testPath = x))
-          .text("Path to test CSV"),
+          .text("Path to test data (Parquet format)"),
         opt[String]("results")
           .action((x, c) => c.copy(resultsDir = x))
           .text("Results directory"),

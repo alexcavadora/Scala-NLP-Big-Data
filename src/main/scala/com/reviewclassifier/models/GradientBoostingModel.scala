@@ -5,8 +5,6 @@ import org.apache.spark.ml.classification.GBTClassifier
 import org.apache.spark.ml.{Pipeline, Transformer}
 import com.reviewclassifier.Config
 
-const name: String = "GradientBoosting"
-
 class GradientBoostingModel(config : Config) extends BaseModel {
   override def train(data: DataFrame): Transformer = {
     val gbt = new GBTClassifier()
@@ -23,4 +21,5 @@ class GradientBoostingModel(config : Config) extends BaseModel {
     val pipeline = new Pipeline().setStages(Array(gbt))
     pipeline.fit(data)
   }
+  override def getName: String = "GradientBoosting"
 }
