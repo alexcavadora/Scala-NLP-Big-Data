@@ -5,9 +5,7 @@ import org.apache.spark.ml.classification.LogisticRegression
 import org.apache.spark.ml.{Pipeline, Transformer}
 import com.reviewclassifier.Config
 
-val name: String = "LogisticRegression"
 class LogisticRegressionModel(config: Config) extends BaseModel {
-
   override def train(data: DataFrame): Transformer = {
     val lr = new LogisticRegression()
         .setLabelCol("label")
@@ -21,4 +19,6 @@ class LogisticRegressionModel(config: Config) extends BaseModel {
     val pipeline = new Pipeline().setStages(Array(lr))
     pipeline.fit(data)
   }
+
+  override def getName: String = "LogisticRegression"
 }
