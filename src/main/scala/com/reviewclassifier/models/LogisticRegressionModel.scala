@@ -5,6 +5,8 @@ import org.apache.spark.ml.classification.LogisticRegression
 import org.apache.spark.ml.{Pipeline, Transformer}
 import com.reviewclassifier.Config
 
+// Se anadio un comentario !!!!!!!!!!!
+
 class LogisticRegressionModel(config: Config) extends BaseModel {
   override def train(data: DataFrame): Transformer = {
     val lr = new LogisticRegression()
