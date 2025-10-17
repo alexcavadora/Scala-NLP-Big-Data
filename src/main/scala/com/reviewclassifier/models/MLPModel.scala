@@ -19,9 +19,9 @@ class MLPModel(config: Config) extends BaseModel {
       .setFeaturesCol("features")
       .setLayers(layers)
       .setMaxIter(config.maxIter)
-      .setBlockSize(128)
+      .setBlockSize(64)
       .setSeed(config.seed)
-      .setStepSize(0.03)
+      .setStepSize(0.01)
 
     val pipeline = new Pipeline().setStages(Array(mlp))
     pipeline.fit(data)

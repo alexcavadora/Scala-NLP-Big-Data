@@ -14,7 +14,7 @@ class RandomForestModel(config: Config) extends BaseModel {
         .setNumTrees(config.numTrees)
         .setMaxDepth(config.maxDepth)
         .setMinInstancesPerNode(5)
-        .setMaxBins(64)
+        .setMaxBins(32)
         .setSubsamplingRate(0.8)
         .setFeatureSubsetStrategy("sqrt")
         .setSeed(config.seed)
