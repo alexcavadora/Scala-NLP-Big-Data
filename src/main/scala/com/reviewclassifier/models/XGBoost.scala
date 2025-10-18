@@ -11,13 +11,12 @@ class XGBoostModel(config: Config) extends BaseModel {
   override def train(data: DataFrame): Transformer = {
     val classWeights = calculateClassWeights(data)
     val labelToWeightUDF = udf((label: Double) => classWeights.getOrElse(label, 1.0))
-    
-    val dataWithWeights = data.withColumn("class_weight", labelToWeightUDF(col("sentiment_label")))
-    val trainingData = dataWithWeights.select("features", "sentiment_label", "class_weight")
+    val dataWithWeights = data.withColumn("class_weight", labelToWeightUDF(col("label")))
+    val trainingData = dataWithWeights.select("features", "label", "class_weight")
 
     val xgboost = new XGBoostClassifier()
       .setFeaturesCol("features")
-      .setLabelCol("sentiment_label")
+      .setLabelCol("label")
       .setWeightCol("class_weight")
       .setEta(config.eta) 
       .setMaxDepth(config.maxDepth)
@@ -33,12 +32,12 @@ class XGBoostModel(config: Config) extends BaseModel {
   }
 
   private def calculateClassWeights(data: DataFrame): Map[Double, Double] = {
-    val classCounts = data.groupBy("sentiment_label").count().collect()
+    val classCounts = data.groupBy("label").count().collect()
     val totalSamples = data.count().toDouble
     val numClasses = classCounts.length.toDouble 
 
     classCounts.map { row =>
-      val label = row.getAs[Double]("sentiment_label")
+      val label = row.getAs[Double]("label")
       val count = row.getAs[Long]("count").toDouble
       val weight = totalSamples / (numClasses * count)
       (label, weight)
