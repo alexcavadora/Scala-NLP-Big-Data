@@ -16,6 +16,7 @@ object ModelFactory {
         case "logisticregression" | "lr" => new LogisticRegressionModel(config)
         case "naivebayes" => new NaiveBayesModel(config)
         case "mlp" | "multilayerperceptron" => new MLPModel(config)
+        case "xgboost" => new XGBoostModel(config)
         case _ => throw new IllegalArgumentException(s"Unknown model: $modelName")
     }
   }

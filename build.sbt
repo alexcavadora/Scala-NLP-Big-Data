@@ -16,7 +16,9 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core"   % "3.5.3",
   "org.apache.spark" %% "spark-sql"    % "3.5.3",
   "org.apache.spark" %% "spark-mllib"  % "3.5.3",
-  "com.github.scopt" %% "scopt"        % "4.1.0"
+  "com.github.scopt" %% "scopt"        % "4.1.0",
+  "ml.dmlc" %% "xgboost4j-spark" % "2.0.3",
+  "ml.dmlc" %% "xgboost4j" % "2.0.3"
 )
 
 
