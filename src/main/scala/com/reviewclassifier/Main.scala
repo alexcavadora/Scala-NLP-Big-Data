@@ -17,7 +17,13 @@ case class Config (
     learningRate: Double = 0.1,
     regParam: Double = 0.01,
     elasticNetParam: Double = 0.0,
-    seed : Int = 64
+    seed : Int = 64,
+    
+    eta: Double = 0.3,
+    numClasses: Int = 3,
+    numRound: Int = 100,
+    numWorkers: Int = 4,
+    objective: String = "multi:softprob"
 )
 
 object Main {
@@ -31,7 +37,7 @@ object Main {
         opt[String]('m', "model")
           .action((x, c) => c.copy(model = x))
           .text(
-            "Model: RandomForest, LogisticRegression, GradientBoosting, NaiveBayes, MLP"
+            "Model: RandomForest, LogisticRegression, GradientBoosting, NaiveBayes, MLP,XGBoost"
           ),
         opt[String]('t', "task")
           .action((x, c) => c.copy(task = x))
@@ -66,6 +72,22 @@ object Main {
         opt[Int]("seed")
           .action((x, c) => c.copy(seed = x))
           .text("Starting seed for consistency"),
+        
+        opt[Double]("eta")
+          .action((x, c) => c.copy(eta = x))
+          .text("XGBoost learning rate (eta)"),
+        opt[Int]("num-classes")
+          .action((x, c) => c.copy(numClasses = x))
+          .text("Number of classes for XGBoost"),
+        opt[Int]("num-round")
+          .action((x, c) => c.copy(numRound = x))
+          .text("XGBoost number of rounds"),
+        opt[Int]("num-workers")
+          .action((x, c) => c.copy(numWorkers = x))
+          .text("XGBoost number of workers"),
+        opt[String]("objective")
+          .action((x, c) => c.copy(objective = x))
+          .text("XGBoost objective function")
       )
     }
     OParser.parse(parser, args, Config()) match {
