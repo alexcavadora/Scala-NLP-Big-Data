@@ -5,21 +5,20 @@ import scopt.OParser
 import com.reviewclassifier.models._
 import com.reviewclassifier.utils._
 
-case class Config (
+case class Config(
     model: String = "RandomForest",
     task: String = "category", // "category" or "sentiment"
     trainPath: String = "data/train.parquet",
     testPath: String = "data/test.parquet",
     resultsDir: String = "results",
     maxIter: Int = 100,
-    maxDepth: Int = 10,
-    numTrees: Int = 100,
+    maxDepth: Int = 8,
+    numTrees: Int = 600,
     learningRate: Double = 0.1,
     regParam: Double = 0.01,
-    elasticNetParam: Double = 0.0,
-    seed : Int = 64,
-    
-    eta: Double = 0.3,
+    elasticNetParam: Double = 0.8,
+    seed: Int = 64,
+    eta: Double = 0.1,
     numClasses: Int = 3,
     numRound: Int = 100,
     numWorkers: Int = 4,
@@ -72,7 +71,6 @@ object Main {
         opt[Int]("seed")
           .action((x, c) => c.copy(seed = x))
           .text("Starting seed for consistency"),
-        
         opt[Double]("eta")
           .action((x, c) => c.copy(eta = x))
           .text("XGBoost learning rate (eta)"),

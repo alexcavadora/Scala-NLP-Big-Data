@@ -1,0 +1,28 @@
+============================================================
+Classification Report: RandomForest - sentiment
+============================================================
+
+TRAINING SET METRICS
+------------------------------------------------------------
+Accuracy:  0.6448
+Precision: 0.7209
+Recall:    0.6448
+F1 Score:  0.5179
+
+Training Confusion Matrix:
+    3348     400      20
+      78     407       2
+   40322   61269  181573
+
+
+TEST SET METRICS
+------------------------------------------------------------
+Accuracy:  0.8761
+Precision: 0.8662
+Recall:    0.8761
+F1 Score:  0.8221
+
+Test Confusion Matrix:
+     318      48       3
+      11      40       2
+    4309    6676   77759

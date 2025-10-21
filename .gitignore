@@ -4,10 +4,10 @@
 *.jar
 *.war
 *.class
-
+.scalafmt.conf
 /build/
 /out/
-
+.bloop
 .idea/
 .idea_modules/
 .bsp/
@@ -16,7 +16,7 @@
 *.iml
 *.ipr
 *.iws
-
+.scala-build/
 .DS_Store
 .DS_Store?
 ._*
