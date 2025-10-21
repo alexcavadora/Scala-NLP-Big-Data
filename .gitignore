@@ -28,7 +28,7 @@ ehthumbs.db
 *.log
 
 /data/*
-/results/*
+
 *.csv
 *.parquet
 
