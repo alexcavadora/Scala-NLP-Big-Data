@@ -18,6 +18,7 @@ class LogisticRegressionModel(config: Config) extends BaseModel {
         .setElasticNetParam(0.8) // More L1
         .setFamily("multinomial")
         .setTol(1e-6)
+        .setFitIntercept(false)
 
     val pipeline = new Pipeline().setStages(Array(lr))
     pipeline.fit(data)
