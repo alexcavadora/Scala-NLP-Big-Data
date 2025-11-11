@@ -1,14 +1,16 @@
 package com.reviewclassifier.models
 
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.ml.classification.{RandomForestClassifier, RandomForestClassificationModel}
+// Importar Regressor
+import org.apache.spark.ml.regression.RandomForestRegressor
 import org.apache.spark.ml.{Pipeline, Transformer}
 import com.reviewclassifier.Config
 
 class RandomForestModel(config: Config) extends BaseModel {
 
   override def train(data: DataFrame): Transformer = {
-    val rf = new RandomForestClassifier()
+    // Usar RandomForestRegressor
+    val rf = new RandomForestRegressor()
         .setLabelCol("label")
         .setFeaturesCol("features")
         .setNumTrees(config.numTrees)
@@ -23,5 +25,5 @@ class RandomForestModel(config: Config) extends BaseModel {
     pipeline.fit(data)
   }
 
-  override def getName: String = "RandomForest"
+  override def getName: String = "RandomForestRegressor"
 }

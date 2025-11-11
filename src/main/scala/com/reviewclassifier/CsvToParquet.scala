@@ -7,26 +7,20 @@ object CsvToParquet {
     val spark = SparkSession.builder
       .appName("CsvToParquet")
       .master("local[*]")
-      .config("spark.driver.memory", "8g")
+      .config("spark.driver.memory", "25g")
       .getOrCreate()
 
-    println("Converting data/train.csv to data/train.parquet...")
-    val trainDf = spark.read
-      .option("header", "true")
-      .option("inferSchema", "true")
-      .csv("data/train.csv")
-    trainDf.write.mode("overwrite").parquet("data/train.parquet")
-    println("Conversion of training data complete.")
-
-    println("Converting data/test.csv to data/test.parquet...")
+    println(s"Converting ${args(0)} to data/${args(1)}.parquet...")
     val testDf = spark.read
       .option("header", "true")
       .option("inferSchema", "true")
-      .csv("data/test.csv")
-    testDf.write.mode("overwrite").parquet("data/test.parquet")
-    println("Conversion of test data complete.")
+      .csv(s"${args(0)}")
+    testDf.write.mode("overwrite").parquet(s"data/${args(1)}.parquet")
+    println("Conversion of data complete.")
 
     spark.stop()
     println("Parquet conversion finished.")
   }
 }
+
+

@@ -13,11 +13,13 @@ object ModelFactory {
   def getModel(modelName: String, config: Config): BaseModel = {
     modelName.toLowerCase match {
         case "randomforest" | "rf" => new RandomForestModel(config)
-        case "logisticregression" | "lr" => new LogisticRegressionModel(config)
-        case "naivebayes" => new NaiveBayesModel(config)
-        case "mlp" | "multilayerperceptron" => new MLPModel(config)
+        // 'logisticregression' ahora apunta a 'LinearRegressionModel'
+        case "linearregression" | "lr" => new LinearRegressionModel(config)
+        case "gradientboosting" | "gbt" => new GradientBoostingModel(config)
         case "xgboost" => new XGBoostModel(config)
-        case _ => throw new IllegalArgumentException(s"Unknown model: $modelName")
+        
+        // Eliminados: naivebayes, mlp, logisticregression (nombre antiguo)
+        case _ => throw new IllegalArgumentException(s"Unknown regression model: $modelName")
     }
   }
 }

@@ -5,25 +5,23 @@ import scopt.OParser
 import com.reviewclassifier.models._
 import com.reviewclassifier.utils._
 
-case class Config (
+case class Config(
     model: String = "RandomForest",
-    task: String = "category", // "category" or "sentiment"
+    labelCol: String = "score", // Columna de etiqueta para regresión
     trainPath: String = "data/train.parquet",
     testPath: String = "data/test.parquet",
     resultsDir: String = "results",
     maxIter: Int = 100,
-    maxDepth: Int = 10,
-    numTrees: Int = 100,
+    maxDepth: Int = 8,
+    numTrees: Int = 100, // Reducido para regresión, ajustar según sea necesario
     learningRate: Double = 0.1,
     regParam: Double = 0.01,
-    elasticNetParam: Double = 0.0,
-    seed : Int = 64,
-    
-    eta: Double = 0.3,
-    numClasses: Int = 3,
+    elasticNetParam: Double = 0.8,
+    seed: Int = 64,
+    eta: Double = 0.1,
     numRound: Int = 100,
-    numWorkers: Int = 4,
-    objective: String = "multi:softprob"
+    numWorkers: Int = 4
+    // Eliminados: task, numClasses, objective
 )
 
 object Main {
@@ -32,16 +30,16 @@ object Main {
     val parser = {
       import builder._
       OParser.sequence(
-        programName("ReviewClassifier"),
-        head("Review Classifier", "0.1.0"),
+        programName("ReviewRegressor"),
+        head("Review Regressor", "0.1.0"),
         opt[String]('m', "model")
           .action((x, c) => c.copy(model = x))
           .text(
-            "Model: RandomForest, LogisticRegression, GradientBoosting, NaiveBayes, MLP,XGBoost"
+            "Model: RandomForest, LinearRegression, GradientBoosting, XGBoost"
           ),
-        opt[String]('t', "task")
-          .action((x, c) => c.copy(task = x))
-          .text("Task: category or sentiment"),
+        opt[String]("label-col")
+          .action((x, c) => c.copy(labelCol = x))
+          .text("Name of the continuous label column (e.g., 'score')"),
         opt[String]("train")
           .action((x, c) => c.copy(trainPath = x))
           .text("Path to training data (Parquet format)"),
@@ -72,22 +70,16 @@ object Main {
         opt[Int]("seed")
           .action((x, c) => c.copy(seed = x))
           .text("Starting seed for consistency"),
-        
         opt[Double]("eta")
           .action((x, c) => c.copy(eta = x))
           .text("XGBoost learning rate (eta)"),
-        opt[Int]("num-classes")
-          .action((x, c) => c.copy(numClasses = x))
-          .text("Number of classes for XGBoost"),
         opt[Int]("num-round")
           .action((x, c) => c.copy(numRound = x))
           .text("XGBoost number of rounds"),
         opt[Int]("num-workers")
           .action((x, c) => c.copy(numWorkers = x))
-          .text("XGBoost number of workers"),
-        opt[String]("objective")
-          .action((x, c) => c.copy(objective = x))
-          .text("XGBoost objective function")
+          .text("XGBoost number of workers")
+        // Eliminados: num-classes, objective
       )
     }
     OParser.parse(parser, args, Config()) match {
@@ -101,21 +93,21 @@ object Main {
   def run(config: Config): Unit = {
     val spark = SparkSession
       .builder()
-      .appName("ReviewClassifier")
+      .appName("ReviewRegressor")
       .master("local[*]")
       .config("spark.driver.memory", "4g")
       .getOrCreate()
 
     try {
       println(
-        s"=== Starting ${config.model} for ${config.task} classification ==="
+        s"=== Starting ${config.model} for regression on label ${config.labelCol} ==="
       )
       println(s"Configuration: $config")
 
       // Load and prepare data
       val dataLoader = new DataLoader(spark)
       val (trainDf, testDf) =
-        dataLoader.loadData(config.trainPath, config.testPath, config.task)
+        dataLoader.loadData(config.trainPath, config.testPath, config.labelCol)
 
       println(s"Training samples: ${trainDf.count()}")
       println(s"Test samples: ${testDf.count()}")
@@ -129,27 +121,29 @@ object Main {
 
       // Evaluate
       println("\n=== Evaluating model ===")
-      val evaluator = new Evaluator(spark, config.task)
+      val evaluator = new Evaluator(spark) // Ya no necesita 'task'
 
       val trainMetrics = evaluator.evaluate(trainedModel, trainDf, "train")
       val testMetrics = evaluator.evaluate(trainedModel, testDf, "test")
 
       // Save results
       val resultSaver =
-        new ResultSaver(config.resultsDir, config.model, config.task)
+        new ResultSaver(config.resultsDir, config.model) // Ya no necesita 'task'
       resultSaver.saveMetrics(trainMetrics, testMetrics)
-      resultSaver.saveModel(trainedModel, s"${config.model}_${config.task}")
+      resultSaver.saveModel(trainedModel, s"${config.model}_${config.labelCol}")
 
       println("\n=== Results Summary ===")
-      println(s"Train Accuracy: ${trainMetrics.accuracy}")
-      println(s"Test Accuracy: ${testMetrics.accuracy}")
-      println(s"Test F1 Score: ${testMetrics.f1}")
+      println(f"Train RMSE: ${trainMetrics.rmse}%.4f")
+      println(f"Test RMSE: ${testMetrics.rmse}%.4f")
+      println(f"Test R-squared: ${testMetrics.r2}%.4f")
 
       println(
-        s"\nResults saved to: ${config.resultsDir}/${config.model}_${config.task}/"
+        s"\nResults saved to: ${config.resultsDir}/${config.model}/"
       )
     } finally {
       spark.stop()
     }
   }
+
+
 }
